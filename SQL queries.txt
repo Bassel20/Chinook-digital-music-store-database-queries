@@ -1,0 +1,65 @@
+Question 1:
+Build a query that returns top 30 customers that spent the most money.
+
+SELECT c.customerid, c.FirstName, SUM(i.total)
+FROM Customer c
+JOIN Invoice i
+ON c.customerid = i.CustomerId
+GROUP BY 1, 2
+ORDER BY 3 DESC
+LIMIT 30;
+----------------------------------------------------------------------------------
+Question 2:
+Write a query that returns the Artist name and total track count of the top 10 rock bands.
+
+SELECT a.artistid, a.name, COUNT(g.name) songs
+FROM Artist a
+JOIN Album al
+ON a.ArtistId = al.ArtistId
+JOIN track t
+ON t.albumid = al.AlbumId
+JOIN genre g
+ON g.GenreId = t.GenreId
+WHERE g.name = 'Rock'
+GROUP BY 1, 2
+ORDER BY songs DESC
+LIMIT 10;
+----------------------------------------------------------------------------------
+QUESTION 3: 
+Find total money Spent Per Country Compared with Number of Tracks Sold per said country?
+
+SELECT i.billingcountry AS country, SUM(il.unitprice * il.quantity) AS sales, COUNT(t.trackid) AS Tracks_Count
+FROM Invoice i
+JOIN InvoiceLine il
+ON i.invoiceid = il.invoiceid
+JOIN track t
+ON t.trackid = il.trackid
+GROUP BY i.billingcountry
+ORDER BY 2 DESC;
+----------------------------------------------------------------------------------
+Question 4:
+find which artist has earned the most according to the InvoiceLines
+Then use this artist to find which customer spent the most on this artist.
+
+/* finding the top selling artist */
+SELECT a.name, SUM(il.unitprice*il.quantity) Amount_Spent
+FROM Artist a, Album al, track t, InvoiceLine il
+WHERE a.artistid = al.ArtistId
+AND al.albumid = t.AlbumId
+AND t.trackid = il.TrackId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 5;
+
+/* finding top customers for this artist*/
+SELECT a.name, SUM(il.unitprice*il.quantity) Amount_Spent, c.customerid, c.FirstName, c.LastName
+FROM Artist a, Album al, track t, InvoiceLine il, invoice i, customer c
+WHERE a.artistid = al.ArtistId
+AND al.albumid = t.AlbumId
+AND t.trackid = il.TrackId
+AND il.invoiceid = i.InvoiceId
+AND i.customerid = c.CustomerId
+AND a.name = 'Iron Maiden'
+GROUP BY 1, 3
+ORDER BY 2 DESC
+----------------------------------------------------------------------------------
